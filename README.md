@@ -20,8 +20,14 @@ like
     
 and the Download will begin. 
 
-with **-l <streamcloud-url>** you can give a streamcloud-url to download this one file (like the script from koji3)
-and **-f <file-with-urls>** you can give a file with urls that the programm should be download. 
+with **--urlfile ** you can give a streamcloud-url to download this one file (like the script from koji3)
+and **--download ** you can give a file with urls that the programm should be download. 
+
+after a Finisch Download the directory will be moved in your 
+
+    ~/Videos
+
+directory.
 
 ## notice
 

@@ -80,10 +80,10 @@ class ScDownload:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage="Usage: -f <urlfile>  ",
-                                     description="Download urls from a file or creates a list ")
-    parser.add_argument('-f', dest='urlfile', help="file with urls u want downloaded")
-    parser.add_argument('-l', dest="url", help="a single url that you want downloaded")
-    parser.add_argument('-d', dest="seriesurl", help=" download the given series ")
+                                     description="Download urls from a given series from bs.to")
+    parser.add_argument('--urlfile', dest='urlfile', help="file with urls u want downloaded must be streamcloud-urls")
+    parser.add_argument('--download', dest="url", help="a single streamcloud-url that you want downloaded")
+    parser.add_argument('--series', dest="seriesurl", help=" URL from bs.to ")
     parseCollect = parser.parse_args()
     urlfile = parseCollect.urlfile
     url = parseCollect.url
