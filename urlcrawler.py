@@ -4,7 +4,7 @@ import re
 import argparse
 from urllib.request import urlopen
 import logging
-
+import htmlpars
 
 class ListCrawler:
     def __init__(self, loglevel=logging.DEBUG):
@@ -51,11 +51,19 @@ class ListCrawler:
         :return:
         """
         urltext = self.getwebsite(staffel_url)
+
+
+        parser = htmlpars.HtmlParserHelper()
+        parser.feed(urltext)
+
+        """
+        urltext = self.getwebsite(staffel_url)
         self.__logger.info("get all references from " + staffel_url)
         targets = re.findall(r"serie.*/Streamcloud-1", urltext)
         for item in targets:
             scref = "http://bs.to/" + item
             self.__screfefence.append(scref)
+        """
 
     def getsc_link(self):
         if not self.__screfefence:
