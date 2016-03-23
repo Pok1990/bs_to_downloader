@@ -1,5 +1,6 @@
 import html.parser
 import logging
+from html.entities import name2codepoint
 
 class HtmlParserHelper(html.parser.HTMLParser):
 
@@ -14,27 +15,28 @@ class HtmlParserHelper(html.parser.HTMLParser):
         shandler.setFormatter(formatter)
         self.__logger.addHandler(shandler)
 
-        self.__currenttag = ""
-
     def getepisodes(self, htmltext):
 
         pass
 
     def handle_starttag(self, tag, attrs):
-        if self.__currenttag:
-            self.__logger.debug(tag)
-
-        if tag == "tr":
-            self.__currenttag = tag
-            self.__logger.debug("found one raw")
-
+        self.__logger.debug("Start tag:"+ tag)
+        for attr in attrs:
+            self.__logger.debug("     attr:"+ str(attr))
     def handle_endtag(self, tag):
-        if tag == "tr":
-            self.__currenttag = ""
-            self.__logger.debug("leave raw")
-
+        self.__logger.debug("End tag  :"+ tag)
     def handle_data(self, data):
-        self.__logger.debug(data)
-        if self.__currenttag:
-            pass
-             # self.__logger.debug(data)
+        self.__logger.debug("Data     :"+ data)
+    def handle_comment(self, data):
+        self.__logger.debug("Comment  :"+ data)
+    def handle_entityref(self, name):
+        c = chr(name2codepoint[name])
+        self.__logger.debug("Named ent:"+ c)
+    def handle_charref(self, name):
+        if name.startswith('x'):
+            c = chr(int(name[1:], 16))
+        else:
+            c = chr(int(name))
+        self.__logger.debug("Num ent  :"+ c)
+    def handle_decl(self, data):
+        self.__logger.debug("Decl     :"+ data)
