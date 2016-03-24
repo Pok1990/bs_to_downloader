@@ -13,7 +13,8 @@ class HtmlParserHelper(html.parser.HTMLParser):
         shandler.setLevel(loglevel)
         formatter = logging.Formatter('%(levelname)s \t- %(name)s \t: %(message)s')
         shandler.setFormatter(formatter)
-        self.__logger.addHandler(shandler)
+        if len(self.__logger.handlers) <= 0:
+            self.__logger.addHandler(shandler)
 
     def getepisodes(self, htmltext):
 
