@@ -11,12 +11,16 @@ This is a German website so stream series and animes and other stuff like:
 
 note that all these videos have a German reference. they are Ger dub or Ger sub.
 
+## required environment
+
+this program is tested with python3.5 
+should run also on python3.4
 
 ## Usage
 
 like
     
-    ./scdownload -d http://bs.to/serie/Game-of-Thrones
+    ./scdownload --series http://bs.to/serie/Game-of-Thrones
     
 and the Download will begin. 
 
@@ -31,8 +35,8 @@ directory.
 
 ## notice
 
-only streamcloud-references can be Downloaded. in some times they aren't streamcloud references and the program will skip
-these. you get not a message from that.
+only streamcloud-references can be Downloaded. in some cases they aren't streamcloud references and the program will skip
+these, but you will notice this if you read the output.
 
 the program works straight line, no threading or other fancy magic.
 
