@@ -52,19 +52,15 @@ class ListCrawler:
         staffel = parser.get_episodes()
         return staffel
 
-    def getsc_link(self):
-        if not self.__screfefence:
-            return
-        for url in self.__screfefence:
-            pass
-            htmlstring = self.getwebsite(url)
-            match2 = re.search(r"http://streamcloud.*\" ", htmlstring)
-            if not match2:
-                self.__logger.warning("not Streamcloudmatch in " + url)
-            else:
-                self.__logger.info("found: " + match2.group())
-                self.__sc_links.append(match2.group()[0:-2])
-
+    def getsc_link(self, url):
+        htmlstring = self.getwebsite(url)
+        match2 = re.search(r"http://streamcloud.*\" ", htmlstring)
+        if match2:
+            self.__logger.info("found: " + match2.group())
+            return match2.group()[0:-2]
+        else:
+            self.__logger.warning("not Streamcloudmatch in " + url)
+            return None
 
     @staticmethod
     def getwebsite(targethttpurl):
@@ -98,13 +94,13 @@ class ListCrawler:
                 self.__logger.debug("episodes for " + staffel + " Downloaded")
                 self.__staffeln[staffel] = episodes
 
-        if self.__logger.level is logging.DEBUG:
-            for staffel in self.__staffeln:
-                for episode in self.__staffeln[staffel]:
-                    if "Streamcloud" in self.__staffeln[staffel][episode]:
-                        self.__logger.debug(staffel + "/" + episode + " :" + self.__staffeln[str(staffel)][str(episode)]["Streamcloud"])
-                    else:
-                        self.__logger.debug(staffel + "/" + episode + " no Streamcloud-link found")
+        for staffel in self.__staffeln:
+            for episode in self.__staffeln[staffel]:
+                if "Streamcloud" in self.__staffeln[staffel][episode]:
+                    self.__staffeln[staffel][episode]["Streamcloud"] = self.getsc_link(self.__staffeln[staffel][episode]["Streamcloud"])
+                    self.__logger.debug(staffel + "/" + episode + " :" + self.__staffeln[staffel][episode]["Streamcloud"])
+                else:
+                    self.__logger.debug(staffel + "/" + episode + " no Streamcloud-link found")
         self.__logger.info("the seriesname is " + self.__seriesname)
         return self.__staffeln, self.__seriesname
 
