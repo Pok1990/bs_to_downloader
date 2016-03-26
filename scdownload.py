@@ -10,6 +10,7 @@ class ScDownload:
     def __init__(self, loglevel=logging.DEBUG):
         self.__urls = []
         self.__dirname = ""
+        self.__errorepisodes = []
         self.__logger = logging.getLogger(__name__)
         self.__logger.setLevel(loglevel)
         self.__logger.propagate = False
@@ -52,6 +53,7 @@ class ScDownload:
         home = os.getcwd()
         os.chdir(self.__dirname)
         for item in self.__urls:
+            self.__logger.debug("Downloading " + item)
             value = os.system("./streaming-dl.sh " + item)
             if value is not 0:
                 self.__logger.warning("downloading breaks")
@@ -64,14 +66,21 @@ class ScDownload:
         else:
             self.__logger.debug("this is failed: " + "cp " + self.__dirname + " ~/Videos/")
 
-    def readfromlist(self, linklist, dirname):
-        if not linklist:
+    def readfromlist(self, linkdict, dirname):
+        if not linkdict:
             return
         self.__logger.info("set dirname : " + dirname)
         self.__dirname = dirname
         self.__logger.info("reading urls from a given list")
-        for item in linklist:
-            self.__urls.append(item)
+
+        for staffel in linkdict:
+                for episode in linkdict[staffel]:
+                    if "Streamcloud" in linkdict[staffel][episode]:
+                        self.__urls.append(linkdict[str(staffel)][str(episode)]["Streamcloud"])
+                        self.__logger.debug(staffel + "/" + episode + " :" + linkdict[str(staffel)][str(episode)]["Streamcloud"])
+                    else:
+                        self.__errorepisodes.append(staffel + "/" + episode)
+                        self.__logger.warning(staffel + "/" + episode + " no Streamcloud-link found")
 
     def downloadafile(self, httpside):
         self.__urls.append(httpside)
@@ -94,7 +103,7 @@ if __name__ == "__main__":
 
     if seriesurl is not None:
         spider = urlcrawler.ListCrawler()
-        liste, seriesname = spider.readurl(seriesurl)
-        unit.readfromlist(liste, seriesname)
+        staffdict, seriesname = spider.readurl(seriesurl)
+        unit.readfromlist(staffdict, seriesname)
         unit.downloadlist()
 
