@@ -7,11 +7,8 @@ import logging
 import htmlpars
 
 class ListCrawler:
-    def __init__(self, loglevel=logging.DEBUG):
-        self.__staffelurls = []
-        self.__sc_links = []
-        self.__screfefence = []
-        self.__errourls = []
+    def __init__(self, loglevel=logging.INFO):
+        self.__staffeln = {}
         self.__seriesname = ""
         self.__logger = logging.getLogger(__name__)
         self.__logger.setLevel(loglevel)
@@ -31,12 +28,9 @@ class ListCrawler:
         urltext = self.getwebsite(url)
         staffeln = re.findall(r"serie/.*/\d\"", urltext)  # a " for takes ONLY the staffels...
         for item in staffeln:
-            staffellinks = "http://bs.to/" + item[0:-1]
-            self.__staffelurls.append(staffellinks)
-        self.__logger.info("these staffels.links detected:")
-        for item in self.__staffelurls:
-            self.__logger.info(item)
-        print()
+            self.__staffeln[item[-2]] = "http://bs.to/" + item[0:-1]
+        for staffel in self.__staffeln:
+            self.__logger.debug(staffel + " " + self.__staffeln[staffel])
 
     def getparts(self):
         """
@@ -55,28 +49,8 @@ class ListCrawler:
 
         parser = htmlpars.HtmlParserHelper()
         parser.feed(urltext)
-
-        """
-        urltext = self.getwebsite(staffel_url)
-        self.__logger.info("get all references from " + staffel_url)
-        targets = re.findall(r"serie.*/Streamcloud-1", urltext)
-        for item in targets:
-            scref = "http://bs.to/" + item
-            self.__screfefence.append(scref)
-        """
-
-    def getsc_link(self):
-        if not self.__screfefence:
-            return
-        for url in self.__screfefence:
-            pass
-            htmlstring = self.getwebsite(url)
-            match2 = re.search(r"http://streamcloud.*\" ", htmlstring)
-            if not match2:
-                self.__logger.warning("not Streamcloudmatch in " + url)
-            else:
-                self.__logger.info("found: " + match2.group())
-                self.__sc_links.append(match2.group()[0:-2])
+        staffel = parser.get_episodes()
+        return staffel
 
     @staticmethod
     def getwebsite(targethttpurl):
@@ -91,7 +65,7 @@ class ListCrawler:
         htmlstring = htmlbytes.decode("utf-8")
         return htmlstring
 
-    def readurl(self, url, spez=0):
+    def readurl(self, url):
         """
             if you want download a series, with 5 staffels and you have the first 3
             you can set spez to 4 and then the 4th and higher will be downloaded
@@ -102,30 +76,33 @@ class ListCrawler:
         orders = url.split("/")
         self.__seriesname = orders[-1]
         self.getstaffelurl(url)
-        for i in range(0, spez):
-            self.__staffelurls.pop(0)
-        self.__logger.info("these will be Downloaded:")
-        self.__logger.info(self.__staffelurls)
-        for surl in self.__staffelurls:
-            self.getscref(surl)
-        self.getsc_link()
+        if self.__staffeln:
+            self.__logger.info("these will be Downloaded:")
+            for staffel in self.__staffeln:
+                self.__logger.info(staffel + " " + self.__staffeln[staffel])
+                episodes = self.getscref(self.__staffeln[staffel])
+                self.__logger.debug("episodes for " + staffel + " Downloaded")
+                self.__staffeln[staffel] = episodes
+
+        if self.__logger.level is logging.DEBUG:
+            for staffel in self.__staffeln:
+                for episode in self.__staffeln[staffel]:
+                    if "Streamcloud" in self.__staffeln[staffel][episode]:
+                        self.__logger.debug(staffel + "/" + episode + " :" + self.__staffeln[str(staffel)][str(episode)]["Streamcloud"])
+                    else:
+                        self.__logger.debug(staffel + "/" + episode + " no Streamcloud-link found")
         self.__logger.info("the seriesname is " + self.__seriesname)
-        return self.__sc_links, self.__seriesname
+        return self.__staffeln, self.__seriesname
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage="Usage: -u <url>  ", description="targeturl")
     parser.add_argument('-u', dest='url', help="target url")
-    parser.add_argument('-s', dest='staff', help="start with this staff")
     parseCollect = parser.parse_args()
     targeturl = parseCollect.url
-    startshere = parseCollect.staff
-
-    if startshere is None:
-        startshere = 0
 
     unit = ListCrawler()
-    unit.readurl(targeturl, int(startshere))
+    unit.readurl(targeturl)
     # unit.getsc_link()
 
     """
