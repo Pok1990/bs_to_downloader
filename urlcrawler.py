@@ -52,6 +52,20 @@ class ListCrawler:
         staffel = parser.get_episodes()
         return staffel
 
+    def getsc_link(self):
+        if not self.__screfefence:
+            return
+        for url in self.__screfefence:
+            pass
+            htmlstring = self.getwebsite(url)
+            match2 = re.search(r"http://streamcloud.*\" ", htmlstring)
+            if not match2:
+                self.__logger.warning("not Streamcloudmatch in " + url)
+            else:
+                self.__logger.info("found: " + match2.group())
+                self.__sc_links.append(match2.group()[0:-2])
+
+
     @staticmethod
     def getwebsite(targethttpurl):
         """
