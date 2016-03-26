@@ -23,10 +23,6 @@ class HtmlParserHelper(html.parser.HTMLParser):
         self.__beginngathering = False
         self.__episodes = {}
 
-    def getepisodes(self, htmltext):
-
-        pass
-
     def handle_starttag(self, tag, attrs):
         if tag == "td":
             self.__currenttag_td = True
