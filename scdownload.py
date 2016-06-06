@@ -83,6 +83,7 @@ class ScDownload:
                         self.__logger.warning(staffel + "/" + episode + " no Streamcloud-link found")
 
     def downloadafile(self, httpside):
+        self.__dirname = "singlefile"
         self.__urls.append(httpside)
         self.downloadlist()
 
@@ -100,6 +101,9 @@ if __name__ == "__main__":
 
     unit = ScDownload()
     logging.basicConfig(level=logging.DEBUG)
+
+    if url is not None:
+        unit.downloadafile(url)
 
     if seriesurl is not None:
         spider = urlcrawler.ListCrawler()
