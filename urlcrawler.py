@@ -17,7 +17,10 @@ class ListCrawler:
         shandler.setLevel(loglevel)
         formatter = logging.Formatter('%(levelname)s \t- %(name)s \t: %(message)s')
         shandler.setFormatter(formatter)
-        self.__logger.addHandler(shandler)
+        if len(self.__logger.handlers) <= 0:
+            self.__logger.addHandler(shandler)
+            # deniy multiple prints if the class initiated multiple
+
 
     def getstaffelurl(self, url):
         """
@@ -28,6 +31,7 @@ class ListCrawler:
         urltext = self.getwebsite(url)
         staffeln = re.findall(r"serie/.*/\d\"", urltext)  # a " for takes ONLY the staffels...
         for item in staffeln:
+            # here format for staffeln from 1 to 3  change
             self.__staffeln[item[-2]] = "http://bs.to/" + item[0:-1]
         for staffel in self.__staffeln:
             self.__logger.debug(staffel + " " + self.__staffeln[staffel])

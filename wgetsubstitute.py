@@ -7,8 +7,8 @@ import logging
 from urllib.request import urlopen
 import os
 
-class wgetsubstitute:
-    def __init__(self, loglevel=logging.INFO, filename=""):
+class Wgetsubstitute:
+    def __init__(self, loglevel=logging.WARNING, filename=""):
         self.__logger = logging.getLogger(__name__)
         self.__logger.setLevel(loglevel)
         self.__logger.propagate = False
@@ -16,7 +16,10 @@ class wgetsubstitute:
         shandler.setLevel(loglevel)
         formatter = logging.Formatter('%(levelname)s \t- %(name)s \t: %(message)s')
         shandler.setFormatter(formatter)
-        self.__logger.addHandler(shandler)
+        if len(self.__logger.handlers) <= 0:
+            self.__logger.addHandler(shandler)
+            # deniy multiple prints if the class initiated multiple
+
 
         self.__op = ""
         self.__usrlogin = ""
@@ -107,12 +110,15 @@ class wgetsubstitute:
             self.__logger.debug(furl.group("furl"))
             self.__logger.debug(" episodenname :" + self.__episodename)
 
-            filename = self.__fname
+            filename = self.__fname  # here set for ne filename !
 
             self.__logger.info("filename set to" + filename)
             os.system("echo \"\033[1;32mDescargando \033[0;34m " + self.__id + " \033[1;36m " + self.__fname + " : \033[1;0m\"")
 
-            os.system("wget -c --output-document=" + filename + " " + furl.group("furl"))
+            value = os.system("wget -c --output-document=" + filename + " " + furl.group("furl"))
+            if value is not 0:
+                self.__logger.warning("downloading breaks")
+                exit(0)
 
         else:
             self.__logger.debug("nichts gefunden")

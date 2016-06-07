@@ -4,6 +4,7 @@ import argparse
 import os
 import logging
 import urlcrawler
+import wgetsubstitute
 
 
 class ScDownload:
@@ -19,19 +20,6 @@ class ScDownload:
         formatter = logging.Formatter('%(levelname)s \t- %(name)s \t: %(message)s')
         shandler.setFormatter(formatter)
         self.__logger.addHandler(shandler)
-
-    def readfromfile(self, filewithurls):
-        """
-        takes urls from a file and appended to the list
-        :param filewithurls:
-        :return:
-        """
-        dirname = filewithurls.split(".")
-        self.__dirname = dirname[0]
-        file = open(filewithurls, "r")
-        for line in file:
-            self.__urls.append(line)
-        file.close()
 
     def downloadlist(self):
         """
@@ -54,10 +42,9 @@ class ScDownload:
         os.chdir(self.__dirname)
         for item in self.__urls:
             self.__logger.debug("Downloading " + item)
-            value = os.system("./streaming-dl.sh " + item)
-            if value is not 0:
-                self.__logger.warning("downloading breaks")
-                exit(0)
+            dw = wgetsubstitute.Wgetsubstitute()
+            dw.fulldownload(item)
+
         os.remove("streaming-dl.sh")
         os.chdir(home)
         ok = os.system("mv " + self.__dirname + " ~/Videos/")
@@ -76,6 +63,7 @@ class ScDownload:
         for staffel in linkdict:
                 for episode in linkdict[staffel]:
                     if "Streamcloud" in linkdict[staffel][episode]:
+                        # here i put the sc-links into a list... maybe this is not a good idea if i want save the order and SxxExx format
                         self.__urls.append(linkdict[str(staffel)][str(episode)]["Streamcloud"])
                         self.__logger.debug(staffel + "/" + episode + " :" + linkdict[str(staffel)][str(episode)]["Streamcloud"])
                     else:
@@ -91,11 +79,9 @@ class ScDownload:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage="Usage: -f <urlfile>  ",
                                      description="Download urls from a given series from bs.to")
-    parser.add_argument('--urlfile', dest='urlfile', help="file with urls u want downloaded must be streamcloud-urls")
     parser.add_argument('--download', dest="url", help="a single streamcloud-url that you want downloaded")
     parser.add_argument('--series', dest="seriesurl", help=" URL from bs.to ")
     parseCollect = parser.parse_args()
-    urlfile = parseCollect.urlfile
     url = parseCollect.url
     seriesurl = parseCollect.seriesurl
 

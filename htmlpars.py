@@ -64,6 +64,7 @@ class HtmlParserHelper(html.parser.HTMLParser):
             if isnumber:
                 self.__epfound = True
                 self.__currentepisode = isnumber.group()
+                # here from 1 digit to 3 dits... its important for formatter
                 self.__logger.debug("found a episode: " + self.__currentepisode)
                 self.__episodes[self.__currentepisode] = {}
         self.__logger.debug("Data     :"+ data)
