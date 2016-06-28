@@ -22,6 +22,7 @@ class HtmlParserHelper(html.parser.HTMLParser):
         self.__epfound = False
         self.__beginngathering = False
         self.__episodes = {}
+        self.__currentepisode = 0
 
     def handle_starttag(self, tag, attrs):
         if tag == "td":
@@ -48,6 +49,7 @@ class HtmlParserHelper(html.parser.HTMLParser):
         self.__logger.debug("Start tag:"+ tag)
         for attr in attrs:
             self.__logger.debug("     attr:"+ str(attr))
+
 
     def handle_endtag(self, tag):
         if tag == "td":
