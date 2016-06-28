@@ -24,6 +24,15 @@ class HtmlParserHelper(html.parser.HTMLParser):
         self.__episodes = {}
         self.__currentepisode = 0
 
+    def correctnumber(self,number):
+        self.__logger.debug("number modifiiyng {}".format(number))
+        if len(number) == 3:
+            return number
+        elif len(number) == 2:
+            return "0" + number
+        elif len(number) == 1:
+            return "00" + number
+
     def handle_starttag(self, tag, attrs):
         if tag == "td":
             self.__currenttag_td = True
@@ -66,7 +75,9 @@ class HtmlParserHelper(html.parser.HTMLParser):
             if isnumber:
                 self.__epfound = True
                 self.__currentepisode = isnumber.group()
+                self.__currentepisode = self.correctnumber(self.__currentepisode)
                 # here from 1 digit to 3 dits... its important for formatter
+                self.__logger.debug(self.__currentepisode)
                 self.__logger.debug("found a episode: " + self.__currentepisode)
                 self.__episodes[self.__currentepisode] = {}
         self.__logger.debug("Data     :"+ data)

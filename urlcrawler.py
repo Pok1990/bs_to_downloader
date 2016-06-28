@@ -7,7 +7,7 @@ import logging
 import htmlpars
 
 class ListCrawler:
-    def __init__(self, loglevel=logging.INFO):
+    def __init__(self, loglevel=logging.DEBUG):
         self.__staffeln = {}
         self.__seriesname = ""
         self.__logger = logging.getLogger(__name__)
@@ -22,6 +22,16 @@ class ListCrawler:
             # deniy multiple prints if the class initiated multiple
 
 
+    def correctnumber(self,number):
+        self.__logger.debug("number modifiiyng {}".format(number))
+        if len(number) == 3:
+            return number
+        elif len(number) == 2:
+            return "0" + number
+        elif len(number) == 1:
+            return "00" + number
+
+
     def getstaffelurl(self, url):
         """
             gives me all staffels
@@ -31,8 +41,8 @@ class ListCrawler:
         urltext = self.getwebsite(url)
         staffeln = re.findall(r"serie/.*/\d\"", urltext)  # a " for takes ONLY the staffels...
         for item in staffeln:
-            # here format for staffeln from 1 to 3  change
-            self.__staffeln[item[-2]] = "http://bs.to/" + item[0:-1]
+            staffel = self.correctnumber(item[-2])
+            self.__staffeln[staffel] = "http://bs.to/" + item[0:-1]
         for staffel in self.__staffeln:
             self.__logger.debug(staffel + " " + self.__staffeln[staffel])
 
@@ -49,7 +59,6 @@ class ListCrawler:
         :return:
         """
         urltext = self.getwebsite(staffel_url)
-
 
         parser = htmlpars.HtmlParserHelper()
         parser.feed(urltext)
