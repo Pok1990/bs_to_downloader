@@ -110,10 +110,10 @@ class Wgetsubstitute:
             self.__logger.debug(furl.group("furl"))
             self.__logger.debug(" episodenname :" + self.__episodename)
 
-            ending = re.search(r".*?(?P<value>\..*)", self.__fname)
+            ending = re.search(r".*\.(?P<value>.*)", self.__fname)
             if ending:
                 self.__logger.debug("found ending {}".format(ending.group('value')))
-                filename = self.__episodename + ending.group('value')
+                filename = self.__episodename + "." + ending.group('value')
             else:
                 self.__logger.error("not ending found for mediafile: {}  found pattern {} from {}".format(furl, ending.group('value'), self.__fname))
                 exit(-1)

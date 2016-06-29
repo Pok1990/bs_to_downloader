@@ -28,9 +28,6 @@ class ScDownload:
         after this make a directory and copy all downloaded files in the new dir
         :return:
         """
-        if not self.__urls:
-            self.__logger.warning("empty list for Download")
-            return
         if not self.__dirname:
             self.__logger.warning("no dirname set")
             return
@@ -38,7 +35,6 @@ class ScDownload:
             os.mkdir(self.__dirname)
         except FileExistsError:
             self.__logger.info("directory already exists")
-        os.system("cp Streaming-dl/streaming-dl.sh " + self.__dirname)
         home = os.getcwd()
         os.chdir(self.__dirname)
 
@@ -46,12 +42,7 @@ class ScDownload:
             self.__logger.debug("Downloading {}  Link: {}".format(key, self.__nameandurls[key]))
             downloadunit = wgetsubstitute.Wgetsubstitute(filename=key)
             done = downloadunit.fulldownload(self.__nameandurls[key])
-            
 
-        #for item in self.__urls:
-        #    self.__logger.debug("Downloading " + item)
-        #    dw = wgetsubstitute.Wgetsubstitute()
-        #    dw.fulldownload(item)
 
         os.remove("streaming-dl.sh")
         os.chdir(home)
@@ -73,10 +64,6 @@ class ScDownload:
                     if "Streamcloud" in linkdict[staffel][episode]:
                         fullname = "{}_S{}_E{}".format(self.__dirname, str(staffel), str(episode))
                         self.__nameandurls[fullname] = linkdict[str(staffel)][str(episode)]["Streamcloud"]
-
-                        # maybe i change the list in a dict...  keys are the Names and values the links.
-                        # here i put the sc-links into a list... maybe this is not a good idea if i want save the order and SxxExx format
-                        self.__urls.append(linkdict[str(staffel)][str(episode)]["Streamcloud"])
                         self.__logger.debug(staffel + "/" + episode + " :" + linkdict[str(staffel)][str(episode)]["Streamcloud"])
                     else:
                         self.__errorepisodes.append(staffel + "/" + episode)
