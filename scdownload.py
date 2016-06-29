@@ -8,7 +8,8 @@ import wgetsubstitute
 
 
 class ScDownload:
-    def __init__(self, loglevel=logging.DEBUG):
+    def __init__(self, loglevel=logging.WARNING):
+        self.__loglevel = loglevel
         self.__urls = []
         self.__dirname = ""
         self.__nameandurls = {}
@@ -40,7 +41,7 @@ class ScDownload:
 
         for key in self.__nameandurls:
             self.__logger.debug("Downloading {}  Link: {}".format(key, self.__nameandurls[key]))
-            downloadunit = wgetsubstitute.Wgetsubstitute(filename=key)
+            downloadunit = wgetsubstitute.Wgetsubstitute(loglevel=self.__loglevel, filename=key)
             done = downloadunit.fulldownload(self.__nameandurls[key])
 
 
@@ -80,18 +81,34 @@ if __name__ == "__main__":
                                      description="Download urls from a given series from bs.to")
     parser.add_argument('--download', dest="url", help="a single streamcloud-url that you want downloaded")
     parser.add_argument('--series', dest="seriesurl", help=" URL from bs.to ")
+    parser.add_argument('--log', dest="Loglevel", help="Set the loglevel [1,2,3,4,5] Default is warning(3) debug is 5")
     parseCollect = parser.parse_args()
     url = parseCollect.url
     seriesurl = parseCollect.seriesurl
+    paramloglevel = parseCollect.Loglevel
 
-    unit = ScDownload()
-    logging.basicConfig(level=logging.DEBUG)
+    if paramloglevel is None:
+        loglevel = logging.WARNING
+    else:
+        if paramloglevel == "1":
+           loglevel = logging.CRITICAL
+        elif paramloglevel == "2":
+            loglevel = logging.ERROR
+        elif paramloglevel == "3":
+            loglevel = logging.WARNING
+        elif paramloglevel == "4":
+            loglevel = logging.INFO
+        elif paramloglevel == "5":
+            loglevel = logging.DEBUG
+
+    logging.basicConfig(level=loglevel)
+    unit = ScDownload(loglevel)
 
     if url is not None:
         unit.downloadafile(url)
 
     if seriesurl is not None:
-        spider = urlcrawler.ListCrawler()
+        spider = urlcrawler.ListCrawler(loglevel)
         staffdict, seriesname = spider.readurl(seriesurl)
         unit.readfromlist(staffdict, seriesname)
         unit.downloadlist()

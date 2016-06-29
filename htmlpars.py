@@ -5,7 +5,7 @@ import re
 
 class HtmlParserHelper(html.parser.HTMLParser):
 
-    def __init__(self, loglevel=logging.INFO):
+    def __init__(self, loglevel=logging.WARNING):
         html.parser.HTMLParser.__init__(self)
         self.__logger = logging.getLogger(__name__)
         self.__logger.setLevel(loglevel)

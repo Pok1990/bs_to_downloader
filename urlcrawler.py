@@ -7,7 +7,8 @@ import logging
 import htmlpars
 
 class ListCrawler:
-    def __init__(self, loglevel=logging.DEBUG):
+    def __init__(self, loglevel=logging.WARNING):
+        self.__loglevel = loglevel
         self.__staffeln = {}
         self.__seriesname = ""
         self.__logger = logging.getLogger(__name__)
@@ -60,7 +61,7 @@ class ListCrawler:
         """
         urltext = self.getwebsite(staffel_url)
 
-        parser = htmlpars.HtmlParserHelper()
+        parser = htmlpars.HtmlParserHelper(loglevel=self.__loglevel)
         parser.feed(urltext)
         staffel = parser.get_episodes()
         return staffel

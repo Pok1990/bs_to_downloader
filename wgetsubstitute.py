@@ -8,7 +8,7 @@ from urllib.request import urlopen
 import os
 
 class Wgetsubstitute:
-    def __init__(self, loglevel=logging.DEBUG, filename=""):
+    def __init__(self, loglevel=logging.WARNING, filename=""):
         self.__logger = logging.getLogger(__name__)
         self.__logger.setLevel(loglevel)
         self.__logger.propagate = False
@@ -139,16 +139,4 @@ class Wgetsubstitute:
         time.sleep(12)
         website = self.getwebsite(url, True)
         return self.downloadvid(website)
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(usage="Usage: -u <url>  ", description="targeturl must be a streamcloud url")
-    parser.add_argument('-u', dest='url', help="target url")
-    parseCollect = parser.parse_args()
-    targeturl = parseCollect.url
-
-
-
-    unit = wgetsubstitute()
-
-    unit.fulldownload(targeturl)
 
