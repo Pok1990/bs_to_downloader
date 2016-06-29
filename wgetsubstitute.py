@@ -8,7 +8,7 @@ from urllib.request import urlopen
 import os
 
 class Wgetsubstitute:
-    def __init__(self, loglevel=logging.WARNING, filename=""):
+    def __init__(self, loglevel=logging.DEBUG, filename=""):
         self.__logger = logging.getLogger(__name__)
         self.__logger.setLevel(loglevel)
         self.__logger.propagate = False
@@ -110,26 +110,35 @@ class Wgetsubstitute:
             self.__logger.debug(furl.group("furl"))
             self.__logger.debug(" episodenname :" + self.__episodename)
 
-            filename = self.__fname  # here set for ne filename !
+            ending = re.search(r".*?(?P<value>\..*)", self.__fname)
+            if ending:
+                self.__logger.debug("found ending {}".format(ending.group('value')))
+                filename = self.__episodename + ending.group('value')
+            else:
+                self.__logger.error("not ending found for mediafile: {}  found pattern {} from {}".format(furl, ending.group('value'), self.__fname))
+                exit(-1)
 
-            self.__logger.info("filename set to" + filename)
+            self.__logger.info("filename set to {}".format(filename))
             os.system("echo \"\033[1;32mDescargando \033[0;34m " + self.__id + " \033[1;36m " + self.__fname + " : \033[1;0m\"")
 
             value = os.system("wget -c --output-document=" + filename + " " + furl.group("furl"))
             if value is not 0:
                 self.__logger.warning("downloading breaks")
-                exit(0)
+                exit(-1)
+            return True
 
         else:
-            self.__logger.debug("nichts gefunden")
-        pass
+            self.__logger.debug("nichts gefunden (file : \"xxxxxxxxxxxxxx\" ) in :")
+            self.__logger.debug(website)
+            self.__logger.warning("episode {} could not be downloaded... not found the downloading File".format())
+            return False
 
     def fulldownload(self, url):
         website = self.getwebsite(url)
         self.getdata(website)
         time.sleep(12)
         website = self.getwebsite(url, True)
-        self.downloadvid(website)
+        return self.downloadvid(website)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage="Usage: -u <url>  ", description="targeturl must be a streamcloud url")

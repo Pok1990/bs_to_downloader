@@ -11,6 +11,7 @@ class ScDownload:
     def __init__(self, loglevel=logging.DEBUG):
         self.__urls = []
         self.__dirname = ""
+        self.__nameandurls = {}
         self.__errorepisodes = []
         self.__logger = logging.getLogger(__name__)
         self.__logger.setLevel(loglevel)
@@ -40,10 +41,17 @@ class ScDownload:
         os.system("cp Streaming-dl/streaming-dl.sh " + self.__dirname)
         home = os.getcwd()
         os.chdir(self.__dirname)
-        for item in self.__urls:
-            self.__logger.debug("Downloading " + item)
-            dw = wgetsubstitute.Wgetsubstitute()
-            dw.fulldownload(item)
+
+        for key in self.__nameandurls:
+            self.__logger.debug("Downloading {}  Link: {}".format(key, self.__nameandurls[key]))
+            downloadunit = wgetsubstitute.Wgetsubstitute(filename=key)
+            done = downloadunit.fulldownload(self.__nameandurls[key])
+            
+
+        #for item in self.__urls:
+        #    self.__logger.debug("Downloading " + item)
+        #    dw = wgetsubstitute.Wgetsubstitute()
+        #    dw.fulldownload(item)
 
         os.remove("streaming-dl.sh")
         os.chdir(home)
@@ -63,6 +71,10 @@ class ScDownload:
         for staffel in linkdict:
                 for episode in linkdict[staffel]:
                     if "Streamcloud" in linkdict[staffel][episode]:
+                        fullname = "{}_S{}_E{}".format(self.__dirname, str(staffel), str(episode))
+                        self.__nameandurls[fullname] = linkdict[str(staffel)][str(episode)]["Streamcloud"]
+
+                        # maybe i change the list in a dict...  keys are the Names and values the links.
                         # here i put the sc-links into a list... maybe this is not a good idea if i want save the order and SxxExx format
                         self.__urls.append(linkdict[str(staffel)][str(episode)]["Streamcloud"])
                         self.__logger.debug(staffel + "/" + episode + " :" + linkdict[str(staffel)][str(episode)]["Streamcloud"])
